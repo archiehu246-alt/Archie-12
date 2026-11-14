@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Habit tracker</title>
-  <link rel="manifest" href="manifest.json">
+<link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#1F7A5C">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -20,7 +20,7 @@ body{margin:0;background:var(--bg);color:var(--ink);font-family:'Bricolage Grote
 button,input{font:inherit;color:inherit}
 :focus-visible{outline:3px solid var(--accent);outline-offset:2px}
 .wrap{max-width:760px;margin:0 auto;padding:24px 16px 48px}
-header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:24px}
+header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:20px}
 .date{margin:0;color:var(--muted);font-size:15px}
 h1{margin:2px 0 6px;font-size:clamp(28px,7vw,40px);line-height:1.1;font-weight:700;letter-spacing:-.02em}
 .summary{margin:0;color:var(--muted);max-width:30ch}
@@ -29,10 +29,17 @@ h1{margin:2px 0 6px;font-size:clamp(28px,7vw,40px);line-height:1.1;font-weight:7
 .ring .track{stroke:var(--line)}
 .ring .arc{stroke:var(--accent);stroke-linecap:round;transition:stroke-dashoffset .5s ease}
 .ring .num{position:absolute;inset:0;display:grid;place-items:center;font-size:28px;font-weight:700}
-form{display:flex;gap:8px;margin-bottom:20px}
+.tabs{display:flex;gap:4px;margin-bottom:16px;background:var(--line);padding:4px;border-radius:14px}
+.tabs button{flex:1;border:0;border-radius:10px;padding:8px;background:none;cursor:pointer;font-weight:600;color:var(--muted)}
+.tabs button[aria-pressed=true]{background:var(--surface);color:var(--ink)}
+form{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px}
 input[type=text]{flex:1;min-width:0;padding:12px 14px;border:1.5px solid var(--line);border-radius:12px;background:var(--surface)}
 input[type=text]::placeholder{color:var(--muted)}
 .add{padding:12px 18px;border:0;border-radius:12px;background:var(--accent);color:var(--accent-ink);font-weight:600;cursor:pointer}
+.rep{flex-basis:100%;display:flex;align-items:center;gap:6px;color:var(--muted);font-size:14px}
+.rep span{margin-right:4px}
+.chip{width:36px;height:36px;border-radius:50%;border:1.5px solid var(--line);background:var(--surface);cursor:pointer;font-weight:600;font-size:13px;color:var(--muted);padding:0}
+.chip[aria-pressed=true]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px}
 .card{background:var(--surface);border:1.5px solid var(--line);border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:12px}
 .card.done{border-color:var(--accent);background:linear-gradient(var(--soft),var(--soft)),var(--surface)}
@@ -44,13 +51,33 @@ h2{margin:0;font-size:19px;font-weight:600;line-height:1.25;overflow-wrap:anywhe
 .week{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
 .day{display:flex;flex-direction:column;align-items:center;gap:4px;border:0;background:none;padding:2px 0;cursor:pointer;color:var(--muted);font-size:12px}
 .dot{width:22px;height:22px;border-radius:50%;border:2px solid var(--line)}
-.day.on .dot{background:var(--accent);border-color:var(--accent)}
+.day.off .dot{border-style:dashed;opacity:.55}
+.day.on .dot{background:var(--accent);border-color:var(--accent);border-style:solid;opacity:1}
 .day.today .dot{box-shadow:0 0 0 3px var(--soft)}
 .day.today{color:var(--ink);font-weight:600}
 .check{padding:11px;border-radius:12px;border:1.5px solid var(--accent);background:transparent;color:var(--accent);font-weight:600;cursor:pointer}
 .check[aria-pressed=true]{background:var(--accent);color:var(--accent-ink)}
+.check.rest{border-color:var(--line);color:var(--muted)}
 .empty{grid-column:1/-1;padding:28px 16px;text-align:center;color:var(--muted);border:1.5px dashed var(--line);border-radius:18px}
+.empty button{margin:4px;padding:8px 12px;border-radius:999px;border:1.5px solid var(--accent);background:none;color:var(--accent);cursor:pointer;font-weight:600}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
+.stat,.panel{background:var(--surface);border:1.5px solid var(--line);border-radius:16px;padding:14px}
+.stat b{display:block;font-size:26px;line-height:1.1}
+.stat span,.panel p{color:var(--muted);font-size:13px;margin:0}
+.panel{margin-bottom:12px}
+.panel h2{font-size:17px;margin-bottom:10px}
+.heat{display:grid;grid-template-rows:repeat(7,1fr);grid-auto-flow:column;grid-auto-columns:1fr;gap:4px}
+.cell{aspect-ratio:1;border-radius:4px;background:var(--line)}
+.cell.l1{background:color-mix(in srgb,var(--accent) 30%,var(--line))}
+.cell.l2{background:color-mix(in srgb,var(--accent) 55%,var(--line))}
+.cell.l3{background:color-mix(in srgb,var(--accent) 80%,var(--line))}
+.cell.l4{background:var(--accent)}
+.cell.fut{background:none}
+.row{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+.btn{padding:10px 14px;border-radius:12px;border:1.5px solid var(--accent);background:none;color:var(--accent);font-weight:600;cursor:pointer}
+.msg{min-height:1.4em;margin:0}
 .note{margin:24px 0 0;text-align:center;color:var(--muted);font-size:13px}
+[hidden]{display:none!important}
 @media (prefers-reduced-motion:reduce){.ring .arc{transition:none}}
 </style>
 </head>
@@ -71,135 +98,241 @@ h2{margin:0;font-size:19px;font-weight:600;line-height:1.25;overflow-wrap:anywhe
     </div>
   </header>
 
-  <form id="add">
-    <input type="text" id="name" maxlength="60" placeholder="New habit, like “Drink water”" aria-label="New habit name" autocomplete="off">
-    <button class="add" type="submit">Add habit</button>
-  </form>
+  <div class="tabs">
+    <button type="button" id="tabH" aria-pressed="true">Habits</button>
+    <button type="button" id="tabS" aria-pressed="false">Stats</button>
+  </div>
 
-  <main class="grid" id="list"></main>
+  <section id="vH">
+    <form id="add">
+      <input type="text" id="name" maxlength="60" placeholder="New habit, like “Drink water”" aria-label="New habit name" autocomplete="off">
+      <button class="add" type="submit">Add habit</button>
+      <div class="rep" id="rep"><span>Repeat on</span></div>
+    </form>
+    <main class="grid" id="list"></main>
+  </section>
+
+  <section id="vS" hidden>
+    <div class="stats" id="stats"></div>
+    <div class="panel"><h2>Last 12 weeks</h2><div class="heat" id="heat"></div></div>
+    <div class="panel">
+      <h2>Your data</h2>
+      <p>Download a backup to keep your streaks safe or move them to a new phone.</p>
+      <div class="row">
+        <button type="button" class="btn" id="exp">Download backup</button>
+        <button type="button" class="btn" id="impB">Restore backup</button>
+        <input type="file" id="imp" accept=".json,application/json" hidden>
+      </div>
+      <p class="msg" id="msg" aria-live="polite"></p>
+    </div>
+  </section>
   <p class="note">Your habits are saved on this device only.</p>
 </div>
 
 <script>
-const KEY = 'habit-tracker-v1';
-const C = 263.9;
-const $ = id => document.getElementById(id);
-const el = (tag, cls, text) => {
-  const e = document.createElement(tag);
-  if (cls) e.className = cls;
-  if (text != null) e.textContent = text;
-  return e;
-};
+const KEY='habit-tracker-v1',C=263.9,ALL=[0,1,2,3,4,5,6];
+const DN=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],DL=['S','M','T','W','T','F','S'];
+const DK=/^\d{4}-\d{2}-\d{2}$/;
+const $=id=>document.getElementById(id);
+const el=(t,c,x)=>{const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e};
+const pad=n=>String(n).padStart(2,'0');
+const key=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+const daysBack=n=>{const d=new Date();d.setDate(d.getDate()-n);return d};
 
-function load() {
-  try {
-    const raw = localStorage.getItem(KEY);
-    const v = raw ? JSON.parse(raw) : [];
-    return Array.isArray(v) ? v.filter(h => h && typeof h.name === 'string').map(h => ({ id: String(h.id), name: h.name, done: h.done && typeof h.done === 'object' ? h.done : {} })) : [];
-  } catch (e) { return []; }
+function norm(h){
+  if(!h||typeof h.name!=='string')return null;
+  const done={};
+  if(h.done&&typeof h.done==='object')for(const k in h.done)if(DK.test(k)&&h.done[k])done[k]=true;
+  let days=Array.isArray(h.days)?[...new Set(h.days.filter(n=>Number.isInteger(n)&&n>=0&&n<=6))]:ALL;
+  if(!days.length)days=ALL;
+  let created=DK.test(h.created||'')?h.created:key(new Date());
+  const first=Object.keys(done).sort()[0];
+  if(first&&first<created)created=first;
+  return{id:String(h.id||Date.now().toString(36)+Math.random().toString(36).slice(2,6)),name:h.name.slice(0,60),days,created,done};
 }
-function save() {
-  try { localStorage.setItem(KEY, JSON.stringify(habits)); } catch (e) {}
+function load(){
+  try{const v=JSON.parse(localStorage.getItem(KEY)||'[]');return Array.isArray(v)?v.map(norm).filter(Boolean):[]}catch(e){return[]}
 }
+function save(){try{localStorage.setItem(KEY,JSON.stringify(habits))}catch(e){}}
 
-let habits = load();
+let habits=load(),view='h',newDays=new Set(ALL);
 
-const pad = n => String(n).padStart(2, '0');
-const key = d => d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
-const daysBack = n => { const d = new Date(); d.setDate(d.getDate() - n); return d; };
-
-function streak(h) {
-  let n = 0, i = h.done[key(daysBack(0))] ? 0 : 1;
-  while (h.done[key(daysBack(i))]) { n++; i++; }
+const sched=(h,d)=>h.days.includes(d.getDay())&&key(d)>=h.created;
+function dayText(days){
+  const s=[...days].sort((a,b)=>a-b);
+  const j=s.join();
+  return j==='0,1,2,3,4,5,6'?'Every day':j==='1,2,3,4,5'?'Weekdays':j==='0,6'?'Weekends':s.map(n=>DN[n]).join(', ');
+}
+function streak(h){
+  let n=0;
+  for(let i=0;i<800;i++){
+    const d=daysBack(i),k=key(d);
+    if(k<h.created)break;
+    if(h.done[k])n++;
+    else if(i>0&&sched(h,d))break;
+  }
   return n;
 }
-
-function toggle(h, k) {
-  if (h.done[k]) delete h.done[k]; else h.done[k] = true;
-  save(); render();
+function longest(h){
+  let run=0,best=0;
+  const end=key(new Date());
+  for(const d=new Date(h.created+'T00:00:00');key(d)<=end;d.setDate(d.getDate()+1)){
+    const k=key(d);
+    if(h.done[k]){run++;if(run>best)best=run}
+    else if(k!==end&&sched(h,d))run=0;
+  }
+  return best;
+}
+function toggle(h,k){
+  if(h.done[k])delete h.done[k];else{h.done[k]=true;if(k<h.created)h.created=k}
+  save();render();
 }
 
-function card(h) {
-  const today = key(new Date());
-  const isDone = !!h.done[today];
-  const c = el('article', 'card' + (isDone ? ' done' : ''));
-
-  const top = el('div', 'top');
-  const info = el('div');
-  info.append(el('h2', null, h.name));
-  const s = streak(h);
-  info.append(el('p', 'streak', s > 0 ? s + '-day streak' : 'No streak yet'));
-  const del = el('button', 'del', 'Delete');
-  del.type = 'button';
-  del.setAttribute('aria-label', 'Delete habit: ' + h.name);
-  let armed = false, timer;
-  del.onclick = () => {
-    if (!armed) {
-      armed = true;
-      del.textContent = 'Confirm delete';
-      del.classList.add('armed');
-      timer = setTimeout(() => { armed = false; del.textContent = 'Delete'; del.classList.remove('armed'); }, 3000);
-    } else {
+function card(h){
+  const today=new Date(),tk=key(today);
+  const isDone=!!h.done[tk],rest=!h.days.includes(today.getDay());
+  const c=el('article','card'+(isDone?' done':''));
+  const top=el('div','top'),info=el('div');
+  info.append(el('h2',null,h.name));
+  const s=streak(h);
+  info.append(el('p','streak',(s>0?s+'-day streak':'No streak yet')+' · '+dayText(h.days)));
+  const del=el('button','del','Delete');
+  del.type='button';
+  del.setAttribute('aria-label','Delete habit: '+h.name);
+  let armed=false,timer;
+  del.onclick=()=>{
+    if(!armed){
+      armed=true;del.textContent='Confirm delete';del.classList.add('armed');
+      timer=setTimeout(()=>{armed=false;del.textContent='Delete';del.classList.remove('armed')},3000);
+    }else{
       clearTimeout(timer);
-      habits = habits.filter(x => x.id !== h.id);
-      save(); render();
+      habits=habits.filter(x=>x.id!==h.id);
+      save();render();
     }
   };
-  top.append(info, del);
+  top.append(info,del);
 
-  const week = el('div', 'week');
-  for (let i = 6; i >= 0; i--) {
-    const d = daysBack(i), k = key(d), on = !!h.done[k];
-    const b = el('button', 'day' + (on ? ' on' : '') + (i === 0 ? ' today' : ''));
-    b.type = 'button';
-    b.setAttribute('aria-pressed', on);
-    b.setAttribute('aria-label', d.toLocaleDateString(undefined, { weekday: 'long', month: 'short', day: 'numeric' }));
-    b.append(el('span', null, d.toLocaleDateString(undefined, { weekday: 'narrow' })), el('span', 'dot'));
-    b.onclick = () => toggle(h, k);
+  const week=el('div','week');
+  for(let i=6;i>=0;i--){
+    const d=daysBack(i),k=key(d),on=!!h.done[k],off=!h.days.includes(d.getDay());
+    const b=el('button','day'+(on?' on':'')+(off?' off':'')+(i===0?' today':''));
+    b.type='button';
+    b.setAttribute('aria-pressed',on);
+    b.setAttribute('aria-label',d.toLocaleDateString(undefined,{weekday:'long',month:'short',day:'numeric'})+(off?', rest day':''));
+    b.append(el('span',null,DL[d.getDay()]),el('span','dot'));
+    b.onclick=()=>toggle(h,k);
     week.append(b);
   }
-
-  const check = el('button', 'check', isDone ? 'Done today' : 'Mark done today');
-  check.type = 'button';
-  check.setAttribute('aria-pressed', isDone);
-  check.onclick = () => toggle(h, today);
-
-  c.append(top, week, check);
+  const check=el('button','check'+(rest&&!isDone?' rest':''),isDone?'Done today':rest?'Rest day':'Mark done today');
+  check.type='button';
+  check.setAttribute('aria-pressed',isDone);
+  check.onclick=()=>toggle(h,tk);
+  c.append(top,week,check);
   return c;
 }
 
-function render() {
-  const today = key(new Date());
-  const total = habits.length;
-  const done = habits.filter(h => h.done[today]).length;
-
-  $('arc').style.strokeDashoffset = C * (1 - (total ? done / total : 0));
-  $('num').textContent = total ? done + '/' + total : '0';
-  $('ring').setAttribute('aria-label', total ? done + ' of ' + total + ' habits done today' : 'No habits yet');
-  $('summary').textContent = !total ? 'Add your first habit to get started.' : done === total ? 'All done for today. Nice work.' : done + ' of ' + total + ' done today.';
-
-  const list = $('list');
-  list.replaceChildren();
-  if (!total) {
-    list.append(el('div', 'empty', 'No habits yet. Start small, like drinking a glass of water or walking for 10 minutes.'));
-  } else {
-    habits.forEach(h => list.append(card(h)));
+function renderStats(){
+  let best=0,total=0,ok=0,tot=0;
+  habits.forEach(h=>{
+    best=Math.max(best,longest(h));
+    total+=Object.keys(h.done).length;
+    for(let i=0;i<7;i++){const d=daysBack(i);if(sched(h,d)){tot++;if(h.done[key(d)])ok++}}
+  });
+  const box=$('stats');box.replaceChildren();
+  [[best,'Best streak'],[tot?Math.round(100*ok/tot)+'%':'–','Last 7 days'],[total,'Total check-ins']].forEach(([v,l])=>{
+    const s=el('div','stat');s.append(el('b',null,String(v)),el('span',null,l));box.append(s);
+  });
+  const heat=$('heat');heat.replaceChildren();
+  const today=new Date();today.setHours(0,0,0,0);
+  const start=new Date(today);start.setDate(start.getDate()-today.getDay()-77);
+  for(let i=0;i<84;i++){
+    const d=new Date(start);d.setDate(start.getDate()+i);
+    const cell=el('div','cell');
+    if(d>today)cell.classList.add('fut');
+    else{
+      const k=key(d),s=habits.filter(h=>sched(h,d)),ds=s.filter(h=>h.done[k]).length;
+      const any=habits.filter(h=>h.done[k]).length;
+      const lvl=ds?Math.ceil(4*ds/s.length):any?1:0;
+      if(lvl)cell.classList.add('l'+lvl);
+      cell.title=d.toLocaleDateString(undefined,{month:'short',day:'numeric'})+': '+any+' done';
+    }
+    heat.append(cell);
   }
 }
 
-$('date').textContent = new Date().toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' });
+function render(){
+  const now=new Date(),tk=key(now);
+  const due=habits.filter(h=>h.days.includes(now.getDay()));
+  const done=due.filter(h=>h.done[tk]).length,total=due.length;
+  $('arc').style.strokeDashoffset=C*(1-(total?Math.min(1,done/total):0));
+  $('num').textContent=total?done+'/'+total:'0';
+  $('ring').setAttribute('aria-label',total?done+' of '+total+' habits done today':'No habits due today');
+  $('summary').textContent=!habits.length?'Add your first habit to get started.':!total?'Rest day. Nothing is scheduled today.':done>=total?'All done for today. Nice work.':done+' of '+total+' done today.';
+  $('vH').hidden=view!=='h';$('vS').hidden=view!=='s';
+  $('tabH').setAttribute('aria-pressed',view==='h');$('tabS').setAttribute('aria-pressed',view==='s');
+  if(view==='s'){renderStats();return}
+  const list=$('list');list.replaceChildren();
+  if(!habits.length){
+    const e=el('div','empty','No habits yet. Tap one to start, or type your own above.');
+    e.append(el('br'));
+    ['Drink water','Walk 10 minutes','Read 10 pages'].forEach(n=>{
+      const b=el('button',null,n);b.type='button';b.onclick=()=>addHabit(n,ALL);e.append(b);
+    });
+    list.append(e);
+  }else habits.forEach(h=>list.append(card(h)));
+}
 
-$('add').addEventListener('submit', e => {
-  e.preventDefault();
-  const name = $('name').value.trim();
-  if (!name) { $('name').focus(); return; }
-  habits.push({ id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6), name, done: {} });
-  $('name').value = '';
-  save(); render();
+function addHabit(name,days){
+  habits.push(norm({name,days,created:key(new Date()),done:{}}));
+  save();render();
+}
+
+ALL.forEach(i=>{
+  const b=el('button','chip',DL[i]);
+  b.type='button';b.setAttribute('aria-pressed',true);b.setAttribute('aria-label',DN[i]);
+  b.onclick=()=>{
+    if(newDays.has(i)){if(newDays.size===1)return;newDays.delete(i)}else newDays.add(i);
+    b.setAttribute('aria-pressed',newDays.has(i));
+  };
+  $('rep').append(b);
 });
 
+$('date').textContent=new Date().toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric'});
+$('tabH').onclick=()=>{view='h';render()};
+$('tabS').onclick=()=>{view='s';render()};
+$('add').addEventListener('submit',e=>{
+  e.preventDefault();
+  const name=$('name').value.trim();
+  if(!name){$('name').focus();return}
+  addHabit(name,[...newDays]);
+  $('name').value='';
+});
+
+$('exp').onclick=()=>{
+  const blob=new Blob([JSON.stringify({app:'habit-tracker',version:1,habits},null,2)],{type:'application/json'});
+  const a=el('a');a.href=URL.createObjectURL(blob);a.download='habit-backup-'+key(new Date())+'.json';
+  document.body.append(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+  $('msg').textContent='Backup downloaded. Keep the file somewhere safe.';
+};
+$('impB').onclick=()=>$('imp').click();
+$('imp').onchange=e=>{
+  const f=e.target.files[0];if(!f)return;
+  f.text().then(t=>{
+    const data=JSON.parse(t),list=Array.isArray(data)?data:data.habits;
+    if(!Array.isArray(list))throw 0;
+    const clean=list.map(norm).filter(Boolean);
+    if(!clean.length)throw 0;
+    const ids=new Set(clean.map(h=>h.id));
+    habits=[...habits.filter(h=>!ids.has(h.id)),...clean];
+    save();render();
+    $('msg').textContent='Restored '+clean.length+(clean.length===1?' habit.':' habits.');
+  }).catch(()=>{$('msg').textContent='That file isn’t a valid backup.'});
+  e.target.value='';
+};
+
 render();
-  if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}
+if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}
 </script>
 </body>
 </html>
