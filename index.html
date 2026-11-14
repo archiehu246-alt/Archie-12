@@ -79,7 +79,10 @@ h2{margin:0;font-size:19px;font-weight:600;line-height:1.25;overflow-wrap:anywhe
 .note{margin:24px 0 0;text-align:center;color:var(--muted);font-size:13px}
 [hidden]{display:none!important}
 @media (prefers-reduced-motion:reduce){.ring .arc{transition:none}}
-</style>
+.theme{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:12px;margin-top:24px;color:var(--muted);font-size:14px}
+.sw{width:30px;height:30px;border-radius:50%;border:0;padding:0;cursor:pointer}
+.sw[aria-pressed=true]{box-shadow:0 0 0 3px var(--bg),0 0 0 5px var(--ink)}
+.note{margin-top:16px}</style>
 </head>
 <body>
 <div class="wrap">
@@ -333,6 +336,34 @@ $('imp').onchange=e=>{
 
 render();
 if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}
-</script>
+const THEMES=[
+{n:'Green',a:'#1F7A5C',s:'#DCEFE5',bg:'#EEF3F0',da:'#46C28F',ds:'#1D3A31',di:'#06231A'},
+{n:'Blue',a:'#2557D6',s:'#DCE6FB',bg:'#EEF2FA',da:'#6EA0FF',ds:'#1C2D52',di:'#08142E'},
+{n:'Purple',a:'#6D3FD0',s:'#E6DDFA',bg:'#F2EFFA',da:'#A98BFF',ds:'#2E2350',di:'#170B3A'},
+{n:'Pink',a:'#C2307A',s:'#F8DCEA',bg:'#FAF0F5',da:'#F27DB3',ds:'#4A1D36',di:'#3A0A21'},
+{n:'Orange',a:'#C2550F',s:'#FADFC9',bg:'#FAF2EC',da:'#F29A5B',ds:'#4A2A14',di:'#331503'},
+{n:'Slate',a:'#3F4E5F',s:'#DDE3EA',bg:'#EFF2F5',da:'#9FB2C7',ds:'#26323F',di:'#0E1822'}];
+const mq=matchMedia('(prefers-color-scheme: dark)');
+let themeI=0;
+try{themeI=Math.min(THEMES.length-1,Math.max(0,parseInt(localStorage.getItem('habit-theme-v1'),10)||0))}catch(e){}
+function applyTheme(){
+  const t=THEMES[themeI],dk=mq.matches,r=document.documentElement.style;
+  r.setProperty('--accent',dk?t.da:t.a);
+  r.setProperty('--accent-ink',dk?t.di:'#FFFFFF');
+  r.setProperty('--soft',dk?t.ds:t.s);
+  if(dk)r.removeProperty('--bg');else r.setProperty('--bg',t.bg);
+  const m=document.querySelector('meta[name=theme-color]');if(m)m.content=dk?t.da:t.a;
+  document.querySelectorAll('.sw').forEach((b,i)=>b.setAttribute('aria-pressed',i===themeI));
+}
+const themeRow=el('div','theme');
+themeRow.append(el('span',null,'Colour'));
+document.querySelector('.note').before(themeRow);
+THEMES.forEach((t,i)=>{
+  const b=el('button','sw');b.type='button';b.style.background=t.a;b.setAttribute('aria-label',t.n+' colour');
+  b.onclick=()=>{themeI=i;try{localStorage.setItem('habit-theme-v1',String(i))}catch(e){}applyTheme()};
+  themeRow.append(b);
+});
+mq.addEventListener('change',applyTheme);
+applyTheme();</script>
 </body>
 </html>
