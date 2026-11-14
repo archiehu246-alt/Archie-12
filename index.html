@@ -10,7 +10,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Habits">
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;600;700&display=swap" rel="stylesheet">
-<style>
+  <style>
 :root{--bg:#EEF3F0;--surface:#FFFFFF;--ink:#16302B;--muted:#5D746E;--line:#D5E1DB;--accent:#1F7A5C;--accent-ink:#FFFFFF;--soft:#DCEFE5;--danger:#B42318;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0F1B18;--surface:#172723;--ink:#E6F2ED;--muted:#93ADA5;--line:#27403A;--accent:#46C28F;--accent-ink:#06231A;--soft:#1D3A31;--danger:#F47B70;color-scheme:dark}}
 :root[data-theme="dark"]{--bg:#0F1B18;--surface:#172723;--ink:#E6F2ED;--muted:#93ADA5;--line:#27403A;--accent:#46C28F;--accent-ink:#06231A;--soft:#1D3A31;--danger:#F47B70;color-scheme:dark}
@@ -82,7 +82,13 @@ h2{margin:0;font-size:19px;font-weight:600;line-height:1.25;overflow-wrap:anywhe
 .theme{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:12px;margin-top:24px;color:var(--muted);font-size:14px}
 .sw{width:30px;height:30px;border-radius:50%;border:0;padding:0;cursor:pointer}
 .sw[aria-pressed=true]{box-shadow:0 0 0 3px var(--bg),0 0 0 5px var(--ink)}
-.note{margin-top:16px}</style>
+.note{margin-top:16px}
+  .me{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.av{width:48px;height:48px;border-radius:50%;border:0;padding:0;overflow:hidden;background:var(--accent);color:var(--accent-ink);font-weight:700;font-size:20px;cursor:pointer;flex:none;display:grid;place-items:center}
+.av img{width:100%;height:100%;object-fit:cover;display:block}
+.hi{font-weight:600;font-size:17px;cursor:pointer}
+.pf{background:var(--surface);border:1.5px solid var(--line);border-radius:16px;padding:14px;margin-bottom:16px;display:flex;flex-direction:column;gap:10px}
+.pf label,.pf p{margin:0;color:var(--muted);font-size:13px}</style>
 </head>
 <body>
 <div class="wrap">
@@ -364,6 +370,49 @@ THEMES.forEach((t,i)=>{
   themeRow.append(b);
 });
 mq.addEventListener('change',applyTheme);
-applyTheme();</script>
+applyTheme();
+const PK='habit-profile-v1';
+let prof={name:'',photo:''};
+try{const p=JSON.parse(localStorage.getItem(PK)||'{}');if(p&&typeof p==='object'){prof.name=typeof p.name==='string'?p.name.slice(0,30):'';prof.photo=typeof p.photo==='string'&&p.photo.startsWith('data:image/')?p.photo:''}}catch(e){}
+function saveProf(){try{localStorage.setItem(PK,JSON.stringify(prof))}catch(e){}}
+const me=el('div','me'),av=el('button','av'),hi=el('span','hi');
+av.type='button';av.setAttribute('aria-label','Edit profile');
+me.append(av,hi);
+const pf=el('div','pf');pf.hidden=true;
+const nl=el('label',null,'Your name');nl.setAttribute('for','pname');
+const ni=el('input');ni.type='text';ni.id='pname';ni.maxLength=30;ni.placeholder='Pick a username';ni.autocomplete='off';
+const prow=el('div','row');
+const up=el('button','btn','Choose photo');up.type='button';
+const rm=el('button','btn','Remove photo');rm.type='button';
+const sv=el('button','btn','Save');sv.type='button';
+const file=el('input');file.type='file';file.accept='image/*';file.hidden=true;
+prow.append(up,rm,sv);
+pf.append(nl,ni,prow,el('p',null,'Your name and photo stay on this device and aren’t shared.'),file);
+document.querySelector('header').before(me,pf);
+function drawProf(){
+  av.replaceChildren();
+  if(prof.photo){const im=el('img');im.src=prof.photo;im.alt='';av.append(im)}
+  else av.textContent=prof.name?Array.from(prof.name)[0].toUpperCase():'+';
+  hi.textContent=prof.name?'Hi, '+prof.name:'Add your name and photo';
+  rm.hidden=!prof.photo;
+}
+av.onclick=hi.onclick=()=>{pf.hidden=!pf.hidden;if(!pf.hidden){ni.value=prof.name;ni.focus()}};
+up.onclick=()=>file.click();
+rm.onclick=()=>{prof.photo='';saveProf();drawProf()};
+sv.onclick=()=>{prof.name=ni.value.trim().slice(0,30);saveProf();drawProf();pf.hidden=true};
+ni.addEventListener('keydown',e=>{if(e.key==='Enter')sv.click()});
+file.onchange=e=>{
+  const f=e.target.files[0];e.target.value='';
+  if(!f||!f.type.startsWith('image/'))return;
+  const url=URL.createObjectURL(f),im=new Image();
+  im.onload=()=>{
+    const s=Math.min(im.width,im.height),c=document.createElement('canvas');c.width=c.height=128;
+    c.getContext('2d').drawImage(im,(im.width-s)/2,(im.height-s)/2,s,s,0,0,128,128);
+    prof.photo=c.toDataURL('image/jpeg',0.82);saveProf();drawProf();URL.revokeObjectURL(url);
+  };
+  im.onerror=()=>URL.revokeObjectURL(url);
+  im.src=url;
+};
+drawProf();</script>
 </body>
 </html>
